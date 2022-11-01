@@ -16,6 +16,7 @@
         rustPkgs = pkgs.rustBuilder.makePackageSet {
           rustVersion = "1.61.0";
           packageFun = import ./Cargo.nix;
+          target = "wasm32-wasi";
         };
 
       in rec {
@@ -23,6 +24,10 @@
           # replace wasi-nix with your package name
           wasi-nix = (rustPkgs.workspace.wasi-nix {}).bin;
           default = packages.wasi-nix;
+        };
+        devShell = pkgs.mkShell {
+          inputsFrom = builtins.attrValues self.packages.${system};
+          buildInputs = [ pkgs.wasmtime ];
         };
       }
     );
